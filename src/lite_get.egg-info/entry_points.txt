@@ -1,0 +1,2 @@
+[console_scripts]
+lite-get = lite_get.__main__:main
