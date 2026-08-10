@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
 import logging
-import os
 import subprocess
-import sys
-from ..util.strings import parameterize
+
 from ..common import print_more_compatible as print
+from ..util.strings import parameterize
 
 try:
     from subprocess import DEVNULL
