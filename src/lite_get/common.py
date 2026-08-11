@@ -642,7 +642,7 @@ def script_main(download, **kwargs):
     if args.m3u8:
         m3u8 = True
 
-    # info_only = args.info
+    info_only = args.info
     # if args.url:
     #     dry_run = True
 
@@ -659,7 +659,9 @@ def script_main(download, **kwargs):
     try:
         extra = {'args': args}
 
-        download_main(download, URLs, **extra)
+        download_main(download, URLs,
+                      output_dir=args.output_dir, merge=True, info_only=info_only,
+                      **extra)
 
     except KeyboardInterrupt:
         if args.debug:

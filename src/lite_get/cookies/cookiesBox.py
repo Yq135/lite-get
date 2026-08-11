@@ -11,9 +11,9 @@ current_dir = Path(__file__).resolve().parent
 cookies = None
 
 SITES = {
-    '163': '163Cookies',
-    'bilibili': 'biliCookies',
-    'youtube': 'youtubeCookies',
+    '163': '163Cookie',
+    'bilibili': 'bilibiliCookie',
+    'youtube': 'youtubeCookie',
 }
 
 
@@ -109,7 +109,7 @@ def load_cookies(cookiefile):
 
 
 def set_cookie(cookiefile):
-    # TODO 将传入的文件保存到/用户/lite-get/cookies目录下
+    # TODO 将传入的文件保存到/cookies目录下
     pass
 
 
