@@ -356,6 +356,12 @@ def urls_size(urls, faker=False, headers={}):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
 
+def print_user_agent(faker=False):
+    urllib_default_user_agent = 'Python-urllib/%d.%d' % sys.version_info[:2]
+    user_agent = fake_headers['User-Agent'] if faker else urllib_default_user_agent
+    print('User Agent: %s' % user_agent)
+
+
 def download_urls(
         urls, title, ext, total_size, output_dir='.', refer=None, merge=True,
         faker=False, headers={}, **kwargs
@@ -367,13 +373,13 @@ def download_urls(
     #         refer=refer
     #     )
     #     return
-    # if dry_run:
-    #     print_user_agent(faker=faker)
-    #     try:
-    #         print('Real URLs:\n%s' % '\n'.join(urls))
-    #     except:
-    #         print('Real URLs:\n%s' % '\n'.join([j for i in urls for j in i]))
-    #     return
+    if dry_run:
+        print_user_agent(faker=faker)
+        try:
+            print('Real URLs:\n%s' % '\n'.join(urls))
+        except:
+            print('Real URLs:\n%s' % '\n'.join([j for i in urls for j in i]))
+        return
 
     # if player:
     #     launch_player(player, urls)
@@ -525,8 +531,14 @@ def print_more_compatible(*args, **kwargs):
     return ret
 
 
-def download_url_ffmpeg(url, title, ext, params={}, output_dir='.', stream=True):
+def download_url_ffmpeg(url, title, ext, params={}, output_dir='.', faker=False, stream=True):
     assert url
+    if dry_run:
+        print_user_agent(faker=faker)
+        print('Real URL:\n%s\n' % [url])
+        if params.get('-y', False):  # None or unset ->False
+            print('Real Playpath:\n%s\n' % [params.get('-y')])
+        return
 
     from .processor.ffmpeg import has_ffmpeg_installed, ffmpeg_download_stream
     assert has_ffmpeg_installed(), 'FFmpeg not installed.'
@@ -584,6 +596,10 @@ def script_main(download, **kwargs):
         '-h', '--help', action='store_true',
         help='Print this help message and exit'
     )
+    parser.add_argument(
+        '-c', '--cookies', metavar='COOKIES_FILE',
+        help='Set cookies for each website via cookies.txt'
+    )
     dry_run_grp = parser.add_argument_group(
         'Dry-run options', '(no actual downloading)'
     )
@@ -607,13 +623,9 @@ def script_main(download, **kwargs):
         '-o', '--output-dir', metavar='DIR', default='.',
         help='Set output directory'
     )
-    download_grp.add_argument(
-        '-c', '--cookies', metavar='COOKIES_FILE',
-        help='Set cookies for each website via cookies.txt'
-    )
     download_grp.add_argument('-m', '--m3u8', action='store_true', default=False,
                               help='download video using an m3u8 url')
-    download_grp.add_argument(
+    parser.add_argument(
         '-d', '--debug', action='store_true',
         help='Show traceback and other debug info'
     )
@@ -643,8 +655,9 @@ def script_main(download, **kwargs):
         m3u8 = True
 
     info_only = args.info
-    # if args.url:
-    #     dry_run = True
+    global dry_run
+    if args.url:
+        dry_run = True
 
     URLs = []
 
